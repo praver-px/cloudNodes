@@ -1,6 +1,11 @@
 <script setup>
 import {ref} from "vue";
 import {EmailOutlined} from "@vicons/material";
+import {useLoadingBar, useMessage} from "naive-ui";
+import {noteBaseRequest} from "@/request/noteRequest";
+
+const loadingBar = useLoadingBar();
+const message = useMessage();
 
 const emits = defineEmits(['changeStep']);
 
@@ -10,11 +15,58 @@ const registerFormValue = ref({
   trim: true,
 })
 const registerFormRef = ref(null)
+
+const registerBtnDisable = ref(false)
 const register = (e) => {
   e.preventDefault();
-  registerFormRef.value?.validate((errors) => {
+  registerFormRef.value?.validate(async (errors) => {
     if (!errors) {
-      alert("注册成功")
+      //是否获取过验证码
+      let vcKey = emailVCKey.value;
+
+      if (vcKey === '' || vcKey === null) {
+        throw message.error("请先获取验证码")
+      }
+      //判断接收验证码邮箱是否和注册邮箱一致
+      const vc_email = vcKey.split(":")[1]
+      console.log(vcKey)
+      console.log(vc_email)
+      const email = registerFormValue.value.email;
+      console.log(email)
+      if (email !== vc_email) {
+        throw message.error("获取验证码的邮箱不匹配")
+      }
+
+      loadingBar.start()
+      registerBtnDisable.value = true
+
+      const {data: responseData} = await noteBaseRequest.post(
+          "/user/register/email",
+          {
+            email,
+            vc: registerFormValue.value.vc,
+            vcKey
+          }
+      ).catch(() => {
+        loadingBar.error()
+        message.error("注册请求失败！")
+        setTimeout(() => {
+          registerBtnDisable.value = false
+        }, 2500)
+        throw "发送注册请求失败！"
+      })
+
+      if (responseData.success) {
+        loadingBar.finish()
+        emits('changeStep', 3)
+      } else {
+        loadingBar.error()
+        message.error(responseData.message)
+        setTimeout(() => {
+          registerBtnDisable.value = false
+        }, 2500)
+      }
+
     }
   })
 }
@@ -76,12 +128,34 @@ const resetButtonCountDownStatus = () => {
   btnCountDown.value.time = 60
   btnCountDown.value.disabled = false
 }
+//验证码查询关键词
+const emailVCKey = ref('')
 
 const getEmailVC = () => {
   registerFormRef.value?.validate(
-      (errors) => {
+      async (errors) => {
         if (!errors) {
           buttonCountDown()
+          loadingBar.start()
+          const {data: responseData} = await noteBaseRequest.get(
+              "/email/register/vc",
+              {
+                params: {
+                  email: registerFormValue.value.email
+                }
+              }).catch(() => {
+            loadingBar.error()
+            message.error("验证码发送失败！")
+          })
+
+          if (responseData.success) {
+            loadingBar.finish()
+            message.success("验证码发送成功！")
+            emailVCKey.value = responseData.data
+          } else {
+            loadingBar.error()
+            message.error("验证码发送失败！")
+          }
         }
       },
       (rule) => {
@@ -125,7 +199,7 @@ const getEmailVC = () => {
         <n-button text type="info">《条款与协议》</n-button>
       </n-form-item>
       <n-form-item :show-label="false">
-        <n-button block type="info" @click="register">注册</n-button>
+        <n-button block type="info" :disabled="registerBtnDisable" @click="register">注册</n-button>
       </n-form-item>
     </n-form>
   </n-card>

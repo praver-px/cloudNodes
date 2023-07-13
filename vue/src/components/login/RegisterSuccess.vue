@@ -11,7 +11,7 @@ const emits = defineEmits(['changeStep']);
     <h4 style="margin: 0 0 5px 0">注册成功</h4>
     <n-text>
       初始密码已发送至注册邮箱
-      <n-button text typ e="info" @click="emits('changeStep',2)"> 点击此处前往登录</n-button>
+      <n-button text typ e="info" @click="emits('changeStep',1)"> 点击此处前往登录</n-button>
     </n-text>
   </n-card>
 </template>
