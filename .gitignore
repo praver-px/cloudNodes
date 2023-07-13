@@ -1,7 +1,7 @@
 /.idea/
+/vue/node_modules/
+/vue/.idea/
 /springboot/.idea/
 /springboot/target/
 /springboot/HELP.md
-
-/vue/node_modules/
-
+/springboot/springboot.iml
