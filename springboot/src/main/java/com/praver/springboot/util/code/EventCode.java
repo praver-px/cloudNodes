@@ -94,6 +94,18 @@ public class EventCode {
      * 新增失败
      */
     public static final String INSERT_ERROR = "S_006";
+    /**
+     * 修改异常
+     */
+    public static final String UPDATE_EXCEPTION = "S_007";
+    /**
+     * 修改失败
+     */
+    public static final String UPDATE_ERROR = "S_008";
+    /**
+     * 修改成功
+     */
+    public static final String UPDATE_SUCCESS = "S_009";
 
 
     // ===== 邮箱服务状态码=====
@@ -109,6 +121,7 @@ public class EventCode {
      * 邮箱验证码存储失败
      */
     public static final String EMAIL_SEND_VC_SAVE_REDIS_ERROR = "E_003";
+
 
     /**
      * 发送初始密码异常
@@ -131,25 +144,40 @@ public class EventCode {
      */
     public static final String PARAM_VC_WRONG = "P_001";
     /**
-     * 验证码出错
-     */
-    public static final String PARAM_VC_ERROR = "P_002";
-    /**
      * 验证码关键词有误
      */
-    public static final String PARAM_VC_KEY_WRONG = "P_003";
+    public static final String PARAM_VC_KEY_WRONG = "P_002";
     /**
      * 验证码与邮箱不匹配
      */
-    public static final String PARAM_VC_KEY_EMAIL_WRONG = "P_004";
+    public static final String PARAM_VC_KEY_EMAIL_WRONG = "P_003";
     /**
      * 登录状态有误
      */
-    public static final String PARAM_USER_TOKEN_WRONG = "P_005";
+    public static final String PARAM_USER_TOKEN_WRONG = "P_004";
+    /**
+     * 置顶参数有误
+     */
+    public static final String PARAM_TOP_WRONG = "P_005";
+    /**
+     * 小记编号参数有误
+     */
+    public static final String PARAM_THING_ID_WRONG = "P_006";
+
     //     ===== Redis 服务状态码=====
+
     /**
      * redis 服务出错
      */
     public static final String REDIS_SERVE_ERROR = "R_001";
 
+    //     ===== 小记 服务状态码=====
+    /**
+     * 小记置顶状态修改成功
+     */
+    public static final String THING_TOP_SUCCESS = "T_001";
+    /**
+     * 小记置顶状态修改失败
+     */
+    public static final String THING_TOP_FAILED = "T_002";
 }

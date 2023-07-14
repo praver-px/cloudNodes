@@ -9,7 +9,7 @@ import {
 import {computed, ref} from 'vue'
 import {useThemeStore} from "@/stores/themeStore";
 import {storeToRefs} from "pinia";
-import {getUserToken} from '@/utils/userLoginUtil'
+import {getUserToken, loginInvalid} from '@/utils/userLoginUtil'
 import {useLoadingBar, useMessage} from 'naive-ui'
 import {noteBaseRequest} from "@/request/noteRequest";
 
@@ -39,6 +39,32 @@ const thingFinishShadowColor = computed(() => {
   return isDarkTheme.value ? "#363433" : "#bdaead"
 })
 
+const topThing = async (isTop, thingId) => {
+  const userToken = await getUserToken();
+  loadingBar.start()
+  const {data: responseData} = await noteBaseRequest.get(
+      "/thing/top",
+      {
+        params: {isTop, thingId},
+        headers: {userToken}
+      }
+  ).catch(() => {
+    loadingBar.error()
+    throw message.error(isTop ? "置顶失败！" : "取消置顶失败！")
+  })
+
+  if (responseData.success) {
+    loadingBar.finish()
+    message.success(responseData.message)
+    getThingList()
+  } else {
+    loadingBar.error();
+    message.error(responseData.message)
+    if (responseData.code === "L_008") {
+      loginInvalid(true)
+    }
+  }
+}
 const getThingList = async () => {
   //判断登录状态
   const userToken = await getUserToken();
@@ -61,6 +87,9 @@ const getThingList = async () => {
   } else {
     loadingBar.error();
     message.error(responseData.message)
+    if (responseData.code === "L_008") {
+      loginInvalid(true)
+    }
   }
 }
 getThingList()
@@ -102,7 +131,8 @@ getThingList()
 
             <n-popover>
               <template #trigger>
-                <n-button text style="margin-left: 6px">
+                <!-- !! 数值类型 -> boolean 类型 -->
+                <n-button text style="margin-left: 6px" @click="topThing(!!!t.top,t.id)">
                   <n-icon :size="18" :component="thingCardTopIconText(t.top).icon"/>
                 </n-button>
               </template>

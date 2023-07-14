@@ -1,17 +1,13 @@
 <script setup>
-import {
-  NotificationsNoneOutlined,
-  AccountBoxFilled,
-  ManageAccountsFilled,
-  LogOutRound
-} from '@vicons/material'
-import {NIcon, useMessage, useLoadingBar} from "naive-ui";
+import {AccountBoxFilled, LogOutRound, ManageAccountsFilled, NotificationsNoneOutlined} from '@vicons/material'
+import {NIcon, useLoadingBar, useMessage} from "naive-ui";
 import {useThemeStore} from "@/stores/themeStore";
 import {storeToRefs} from "pinia";
 import {useLoginModalStore} from "@/stores/loginModalStore";
 import {useUserStore} from "@/stores/userStore";
 import {h, ref} from "vue";
 import {noteBaseRequest} from "@/request/noteRequest";
+import {loginInvalid} from "@/utils/userLoginUtil";
 
 const message = useMessage()
 const loadingBar = useLoadingBar()
@@ -26,7 +22,6 @@ const {changeTheme} = themeStore
 //用户的共享数据
 const userStore = useUserStore()
 const {id: userId, head_image, nickName, levelInfo} = storeToRefs(userStore)
-const {resetUserInfo} = userStore
 
 const userMenuShow = ref(false)
 
@@ -84,10 +79,7 @@ const signOutLogin = async () => {
   })
 
   if (responseData.success) {
-    //用户共享数据清空
-    resetUserInfo()
-    //删除本地存储信息
-    localStorage.removeItem("userToken")
+    loginInvalid(true)
   } else {
     message.error(responseData.message)
   }

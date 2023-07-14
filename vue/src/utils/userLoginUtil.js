@@ -1,4 +1,5 @@
 import {useLoginModalStore} from "@/stores/loginModalStore";
+import {useUserStore} from "@/stores/userStore";
 
 /**
  * 获取本地登录用户的token信息，没有则弹出登录窗口
@@ -13,5 +14,19 @@ export const getUserToken = async () => {
         throw "未登录"
     } else {
         return token
+    }
+}
+/**
+ * 登录失效
+ * @param {Boolean} show
+ */
+
+export const loginInvalid = show => {
+
+    localStorage.removeItem("userToken")
+    const {resetUserInfo} = useUserStore()
+    if (show) {
+        const {changeLoginModalShowStatus} = useLoginModalStore()
+        changeLoginModalShowStatus(true)
     }
 }

@@ -8,4 +8,6 @@ import java.util.List;
 public interface IThingService {
 
     List<Thing> getUserNormalTing(int userId) throws ServiceException;
+
+    void topThing(boolean isTop, int thingId, int userId) throws ServiceException;
 }
