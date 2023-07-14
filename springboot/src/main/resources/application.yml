@@ -37,3 +37,6 @@ server:
 logging:
   level:
     com.praver.springboot: debug
+mybatis-flex:
+  configuration:
+    map-underscore-to-camel-case: true

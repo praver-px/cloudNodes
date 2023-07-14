@@ -91,8 +91,6 @@ const signOutLogin = async () => {
   } else {
     message.error(responseData.message)
   }
-
-
 }
 
 </script>

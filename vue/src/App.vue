@@ -32,9 +32,7 @@ onMounted(() => {
             <n-layout-sider width="64px" bordered content-style="padding: 24px 0;text-align:center;">
               海淀桥
             </n-layout-sider>
-            <n-layout-content content-style="padding: 24px;">
-              <n-h2>平山道</n-h2>
-            </n-layout-content>
+            <router-view />
           </n-layout>
         </n-layout>
         <LoginModal/>
