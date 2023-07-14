@@ -8,9 +8,7 @@ import com.praver.springboot.service.IUserService;
 import com.praver.springboot.util.code.EventCode;
 import com.praver.springboot.util.response.ResponseData;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -83,6 +81,24 @@ public class UserController {
         } catch (ServiceException e) {
             e.printStackTrace();
             return new ResponseData(false, e.getMessage(), e.getCode());
+        }
+    }
+
+    /**
+     *  退出登录
+     * @param userToken redis中的userToken信息
+     * @return 响应数据{user：userToken}
+     */
+    @GetMapping("/login/out")
+    public ResponseData signOutLogin(@RequestHeader String userToken){
+        if (Validator.isEmpty(userToken))
+            return new ResponseData(false, "登录状态有误！", EventCode.PARAM_USER_TOKEN_WRONG);
+        try {
+            stringRedisTemplate.delete(userToken);
+            return new ResponseData(true, "退出成功！", EventCode.LOGIN_OUT_SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseData(false, "退出失败！", EventCode.LOGIN_OUT_EXCEPTION);
         }
     }
 }

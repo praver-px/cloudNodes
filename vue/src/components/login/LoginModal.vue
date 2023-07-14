@@ -29,7 +29,7 @@ const changeModalStep = step => {
 </script>
 
 <template>
-  <n-modal v-model:show="showLoginModal" transform-origin="center">
+  <n-modal v-model:show="showLoginModal" :mask-closable="false" transform-origin="center">
     <div style="width: 400px;">
       <Transition name="bounce" mode="out-in">
         <component :is="showLoginModalCard" @changeStep="changeModalStep"/>

@@ -3,10 +3,21 @@ import {useThemeStore} from "@/stores/themeStore";
 import {storeToRefs} from "pinia";
 import LoginModal from "@/components/login/LoginModal.vue";
 import MainTopToolbar from "@/components/toolbar/MainTopToolbar.vue";
+import {onMounted} from "vue";
 
-
+//主题共享资源
 const themeStore = useThemeStore()
+//主题
 const {theme} = storeToRefs(themeStore)
+const {changeTheme} = themeStore
+onMounted(() => {
+  window.addEventListener('storage', event => {
+    if (event.key === 'theme') {
+      const newTheme = JSON.parse(event.newValue)
+      changeTheme(newTheme.isDarkTheme)
+    }
+  })
+})
 </script>
 
 <template>

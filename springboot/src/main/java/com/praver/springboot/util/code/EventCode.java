@@ -23,6 +23,15 @@ public class EventCode {
      * 登录成功后存入用户信息至redis失败
      */
     public static final String LOGIN_SAVE_USER_TOKEN_REDIS_EXCEPTION = "L_005";
+    /**
+     * 退出登录异常
+     */
+    public static final String LOGIN_OUT_EXCEPTION = "L_006";
+    /**
+     * 退出登录成功
+     */
+    public static final String LOGIN_OUT_SUCCESS = "L_007";
+
 
     // ===== 账号状态码=====
     /**
@@ -128,7 +137,11 @@ public class EventCode {
     /**
      * 验证码与邮箱不匹配
      */
-    public static final String PARAM_VC_KEY_EMAIL_WRONG = "p_004";
+    public static final String PARAM_VC_KEY_EMAIL_WRONG = "P_004";
+    /**
+     * 登录状态有误
+     */
+    public static final String PARAM_USER_TOKEN_WRONG = "P_005";
 
 
 }
