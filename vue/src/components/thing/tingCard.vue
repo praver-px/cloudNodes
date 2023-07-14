@@ -87,7 +87,7 @@ const topThing = async (isTop) => {
       :bordered="isDarkTheme"
       :segmented="{'content':'soft'}"
       :title="title"
-      style="min-width: 230px;">
+      style="min-width: 250px;max-width: max-content">
     <template #header-extra>
       <n-popover>
         <template #trigger>

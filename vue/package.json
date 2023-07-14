@@ -33,6 +33,7 @@
     "@ckeditor/vite-plugin-ckeditor5": "^0.1.1",
     "axios": "^1.4.0",
     "dayjs": "^1.11.7",
+    "gsap": "^3.12.2",
     "html-to-text": "^9.0.5",
     "pinia": "^2.0.35",
     "pinia-plugin-persistedstate": "^3.1.0",

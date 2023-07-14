@@ -7,6 +7,7 @@ import {getUserToken, loginInvalid} from '@/utils/userLoginUtil'
 import {useLoadingBar, useMessage} from 'naive-ui'
 import {noteBaseRequest} from "@/request/noteRequest";
 import ThingCard from '@/components/thing/tingCard.vue'
+import gsap from "gsap";
 
 const message = useMessage()
 const loadingBar = useLoadingBar()
@@ -50,6 +51,23 @@ const getThingList = async () => {
 }
 
 getThingList()
+// 执行动画前的位置
+const beforeEnter = (el) => {
+  gsap.set(el, {
+    y: 50,
+    opacity: 0
+  })
+}
+// 执行动画
+const enterEvent = (el, done) => {
+  gsap.to(el, {
+    y: 0,//偏移量 x,y
+    opacity: 1,//透明度
+    duration: 0.3,//动画时间 单位 s
+    delay: el.dataset.index * 0.12,//延迟动画
+    onComplete: done //动画完成后需要调用此函数
+  })
+}
 </script>
 
 <template>
@@ -93,20 +111,28 @@ getThingList()
         </n-card>
       </n-space>
       <!--      具体小记信息-->
-      <n-space v-else-if="!loading && things.length >0">
-        <thing-card
-            v-for="thing in things"
-            :key="thing.id"
-            :id="thing.id"
-            :title="thing.title"
-            :finished="!!thing.finished"
-            :top="!!thing.top"
-            :tags="thing.tags.split(',')"
-            :time="thing.updateTime"
-            @change-status="getThingList(false)"/>
+      <n-space :wrap-item="false">
+        <TransitionGroup @before-enter="beforeEnter" @enter="enterEvent">
+          <template v-if="!loading && things.length >0">
+            <thing-card
+                class="thing-cards"
+                v-for="(thing,index) in things"
+                :key="thing.id"
+                :id="thing.id"
+                :data-index="index"
+                :title="thing.title"
+                :finished="!!thing.finished"
+                :top="!!thing.top"
+                :tags="thing.tags.split(',')"
+                :time="thing.updateTime"
+                @change-status="getThingList(false)"/>
+          </template>
+        </TransitionGroup>
+
       </n-space>
       <!--      暂无内容-->
-      <n-empty v-else style="margin: 20px auto;" description="暂无小记数据，灵光一现，小记一下？" :size="'huge'">
+      <n-empty v-if="!loading && things.length ===0" style="margin: 20px auto;"
+               description="暂无小记数据，灵光一现，小记一下？" :size="'huge'">
         <template #icon>
           <n-icon :component="ContentPasteOffRound"/>
         </template>
@@ -117,3 +143,9 @@ getThingList()
     </n-card>
   </n-layout>
 </template>
+<style scoped>
+
+.n-card.thing-cards {
+  transition: all 0.5s;
+}
+</style>
