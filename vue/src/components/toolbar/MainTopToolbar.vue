@@ -21,8 +21,8 @@ const {changeTheme} = themeStore
 
 //用户的共享数据
 const userStore = useUserStore()
-const {id: userId, head_image, nickName, levelInfo} = storeToRefs(userStore)
-
+const {id: user_id, head_image, nickName, levelInfo} = storeToRefs(userStore)
+const {resetUserInfo} = userStore
 const userMenuShow = ref(false)
 
 const renderIcon = icon => {
@@ -80,6 +80,8 @@ const signOutLogin = async () => {
 
   if (responseData.success) {
     loginInvalid(true)
+    localStorage.removeItem('userToken')
+    resetUserInfo()
   } else {
     message.error(responseData.message)
   }
@@ -90,9 +92,8 @@ const signOutLogin = async () => {
 <template>
   <n-space align="center" justify="space-between" style="height: 100%;">
     <n-text type="info">云笔记</n-text>
-    <n-space align="center">
-      <n-popover trigger="hover" v-model:show="userMenuShow" width="260" content-style="padding: 10px"
-                 v-if="userId !==null">
+    <n-space>
+      <n-popover trigger="hover" :warp-item="false" v-model:show="userMenuShow" :width="260" v-if="user_id !==null">
         <template #trigger>
           <n-button :bordered="false">
             <n-avatar
@@ -121,7 +122,7 @@ const signOutLogin = async () => {
         </n-thing>
       </n-popover>
 
-      <n-divider v-if="userId !==null" vertical style="position: relative;top: 5px;"/>
+      <n-divider v-if="user_id !==null" vertical style="position: relative;top: 5px;"/>
       <!--      消息按钮-->
       <n-badge dot processing color="#a7535a" :offset="[-8,4]">
         <n-button circle tertiary>
@@ -137,7 +138,7 @@ const signOutLogin = async () => {
         </template>
       </n-button>
       <!--      登录按钮-->
-      <n-button v-if="userId === null" tertiary @click="changeLoginModalShowStatus(true)">登录</n-button>
+      <n-button v-if="user_id === null" tertiary @click="changeLoginModalShowStatus(true)">登录</n-button>
     </n-space>
   </n-space>
 
