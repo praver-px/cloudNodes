@@ -4,7 +4,8 @@ import {
   ArrowCircleUpRound,
   DeleteOutlineRound,
   EditNoteRound,
-  ArrowUpwardRound
+  ArrowUpwardRound,
+  ContentPasteOffRound
 } from '@vicons/material'
 import {computed, ref} from 'vue'
 import {useThemeStore} from "@/stores/themeStore";
@@ -38,7 +39,7 @@ const {isDarkTheme} = storeToRefs(themeStore)
 const thingFinishShadowColor = computed(() => {
   return isDarkTheme.value ? "#363433" : "#bdaead"
 })
-
+const loading = ref(true)
 const topThing = async (isTop, thingId, index) => {
   const userToken = await getUserToken();
   loadingBar.start()
@@ -59,7 +60,7 @@ const topThing = async (isTop, thingId, index) => {
   if (responseData.success) {
     loadingBar.finish()
     message.success(responseData.message)
-    getThingList()
+    getThingList(false)
   } else {
     loadingBar.error();
     thing.toTop = false
@@ -69,7 +70,7 @@ const topThing = async (isTop, thingId, index) => {
     }
   }
 }
-const getThingList = async () => {
+const getThingList = async (isUpdateLoading) => {
   //判断登录状态
   const userToken = await getUserToken();
   //发送获取小记列表请求
@@ -88,6 +89,7 @@ const getThingList = async () => {
   if (responseData.success) {
     loadingBar.finish()
     things.value = responseData.data
+    if (isUpdateLoading) loading.value = false
   } else {
     loadingBar.error();
     message.error(responseData.message)
@@ -96,7 +98,8 @@ const getThingList = async () => {
     }
   }
 }
-getThingList()
+
+getThingList(true)
 </script>
 
 <template>
@@ -110,8 +113,37 @@ getThingList()
       </template>
     </n-card>
 
+    <!--    小记列表容器-->
     <n-card size="small" :bordered="false" style="margin-top: 20px; ">
-      <n-space>
+      <!--      加载骨架屏-->
+      <n-space v-if="loading">
+        <n-card
+            style="min-width: 230px;"
+            embedded
+            :bordered="isDarkTheme"
+            :segmented="{'content':'soft'}"
+            size="small"
+            v-for="n in 8">
+          <template #header>
+            <n-skeleton :width="180" size="small"/>
+          </template>
+          <template #header-extra>
+            <n-skeleton circle :width="20" repeat="3" style="margin-left: 6px;"/>
+          </template>
+          <template #default>
+            <n-space>
+              <n-skeleton :width="50" :height="22"/>
+              <n-skeleton :width="80" :height="22"/>
+              <n-skeleton :width="50" :height="22"/>
+            </n-space>
+          </template>
+          <template #footer>
+            <n-skeleton text :width="140"/>
+          </template>
+        </n-card>
+      </n-space>
+      <!--      具体小记信息-->
+      <n-space v-else-if="!loading && things.length >0">
         <n-card
             :class="{'thing-card-finished': t.finished}"
             size="small"
@@ -175,6 +207,15 @@ getThingList()
           </template>
         </n-card>
       </n-space>
+      <!--      暂无内容-->
+      <n-empty v-else style="margin: 20px auto;" description="暂无小记数据，灵光一现，小记一下？" :size="'huge'">
+        <template #icon>
+          <n-icon :component="ContentPasteOffRound"/>
+        </template>
+        <template #extra>
+          <n-button dashed>小记一笔</n-button>
+        </template>
+      </n-empty>
     </n-card>
   </n-layout>
 </template>
