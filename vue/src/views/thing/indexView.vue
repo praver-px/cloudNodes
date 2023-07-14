@@ -39,9 +39,11 @@ const thingFinishShadowColor = computed(() => {
   return isDarkTheme.value ? "#363433" : "#bdaead"
 })
 
-const topThing = async (isTop, thingId) => {
+const topThing = async (isTop, thingId, index) => {
   const userToken = await getUserToken();
   loadingBar.start()
+  const thing = things.value[index]
+  thing.toTop = true
   const {data: responseData} = await noteBaseRequest.get(
       "/thing/top",
       {
@@ -50,6 +52,7 @@ const topThing = async (isTop, thingId) => {
       }
   ).catch(() => {
     loadingBar.error()
+    thing.toTop = false
     throw message.error(isTop ? "置顶失败！" : "取消置顶失败！")
   })
 
@@ -59,6 +62,7 @@ const topThing = async (isTop, thingId) => {
     getThingList()
   } else {
     loadingBar.error();
+    thing.toTop = false
     message.error(responseData.message)
     if (responseData.code === "L_008") {
       loginInvalid(true)
@@ -132,7 +136,7 @@ getThingList()
             <n-popover>
               <template #trigger>
                 <!-- !! 数值类型 -> boolean 类型 -->
-                <n-button text style="margin-left: 6px" @click="topThing(!!!t.top,t.id)">
+                <n-button :disabled="t.toTop" text style="margin-left: 6px" @click="topThing(!!!t.top,t.id,index)">
                   <n-icon :size="18" :component="thingCardTopIconText(t.top).icon"/>
                 </n-button>
               </template>
