@@ -1,6 +1,5 @@
 package com.praver.springboot.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
@@ -19,13 +18,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.praver.springboot.entity.table.Tables.USER;
-
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static com.praver.springboot.entity.table.Tables.USER;
 
 @Service
 @Transactional(rollbackFor = ServiceRollbackException.class)

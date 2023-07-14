@@ -10,7 +10,7 @@ public class EventCode {
     /**
      * 登录失败
      */
-    public static final String login_fail = "L_002";
+    public static final String LOGIN_FAIL = "L_002";
     /**
      * 登录日志创建异常
      */
@@ -31,6 +31,10 @@ public class EventCode {
      * 退出登录成功
      */
     public static final String LOGIN_OUT_SUCCESS = "L_007";
+    /**
+     * 登录失效
+     */
+    public static final String LOGIN_INVALID = "L_008";
 
 
     // ===== 账号状态码=====
@@ -142,6 +146,10 @@ public class EventCode {
      * 登录状态有误
      */
     public static final String PARAM_USER_TOKEN_WRONG = "P_005";
-
+    //     ===== Redis 服务状态码=====
+    /**
+     * redis 服务出错
+     */
+    public static final String REDIS_SERVE_ERROR = "R_001";
 
 }
