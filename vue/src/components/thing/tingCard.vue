@@ -29,7 +29,7 @@ const propsData = defineProps({
 })
 
 //自定义事件
-const emits = defineEmits(['changeStatus']);
+const emits = defineEmits(['changeStatus', 'delete']);
 
 const thingFinishShadowColor = computed(() => {
   return "#363433"
@@ -91,7 +91,7 @@ const topThing = async (isTop) => {
     <template #header-extra>
       <n-popover>
         <template #trigger>
-          <n-button type="error" text style="margin-left: 16px">
+          <n-button type="error" text style="margin-left: 16px" @click="emits('delete',{id,title})">
             <n-icon :size="18" :component="DeleteOutlineRound"/>
           </n-button>
         </template>

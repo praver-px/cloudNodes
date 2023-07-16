@@ -7,6 +7,7 @@ import {getUserToken, loginInvalid} from '@/utils/userLoginUtil'
 import {useLoadingBar, useMessage} from 'naive-ui'
 import {noteBaseRequest} from "@/request/noteRequest";
 import ThingCard from '@/components/thing/tingCard.vue'
+import DeleteRemind from "@/components/remind/DeleteRemind.vue";
 import gsap from "gsap";
 
 const message = useMessage()
@@ -68,6 +69,45 @@ const enterEvent = (el, done) => {
     onComplete: done //动画完成后需要调用此函数
   })
 }
+
+//删除提醒框对象
+const deleteRemind = ref({
+  show: false,//显示情况
+  id: null,//小记id
+  desc: null,//提醒框内容
+})
+const showDeleteRemindDialog = (id, title) => {
+  deleteRemind.value.id = id
+  deleteRemind.value.show = true
+  deleteRemind.value.desc = "您确定要删除《" + title + "》?  \n 删除后可在回收站中恢复，彻底删除将无法恢复！";
+}
+
+const toDeleteTing = async (complete) => {
+  deleteRemind.value.show = false
+  const userToken = await getUserToken();
+  loadingBar.start()
+  const {data: responseData} = await noteBaseRequest.get(
+      "/thing/delete",
+      {
+        params: {complete, thingId: deleteRemind.value.id, isRecycle: false},
+        headers: {userToken}
+      }).catch(() => {
+    loadingBar.error()
+    throw message.error(complete ? '彻底删除小记请求失败！' : '删除小记请求失败！')
+  })
+
+  if (responseData.success) {
+    loadingBar.finish()
+    message.success(responseData.message)
+    getThingList()
+  } else {
+    message.error(responseData.message)
+    if (responseData.code === "L_008") {
+      loginInvalid(true)
+    }
+  }
+
+}
 </script>
 
 <template>
@@ -116,6 +156,7 @@ const enterEvent = (el, done) => {
           <template v-if="!loading && things.length >0">
             <thing-card
                 class="thing-cards"
+                @delete="showDeleteRemindDialog(thing.id,thing.title)"
                 v-for="(thing,index) in things"
                 :key="thing.id"
                 :id="thing.id"
@@ -142,6 +183,13 @@ const enterEvent = (el, done) => {
       </n-empty>
     </n-card>
   </n-layout>
+  <!--删除提醒-->
+  <DeleteRemind
+      @completeDelete=""
+      :show="deleteRemind.show"
+      @delete="toDeleteTing"
+      @cancel="deleteRemind.show = false"
+      :describe="deleteRemind.desc"/>
 </template>
 <style scoped>
 

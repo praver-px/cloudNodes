@@ -163,6 +163,14 @@ public class EventCode {
      * 小记编号参数有误
      */
     public static final String PARAM_THING_ID_WRONG = "P_006";
+    /**
+     * 删除参数有误 - 是否为彻底删除参数
+     */
+    public static final String PARAM_DELETE_COMPLETE_WRONG = "P_007";
+    /**
+     * 删除操作有误 - 是否为回收站操作
+     */
+    public static final String PARAM_DELETE_ReCYCLE_WRONG = "P_006";
 
     //     ===== Redis 服务状态码=====
 
@@ -180,4 +188,14 @@ public class EventCode {
      * 小记置顶状态修改失败
      */
     public static final String THING_TOP_FAILED = "T_002";
+    /**
+     * 删除小记成功
+     */
+    public static final String THING_DELETE_SUCCESS = "T_003";
+    /**
+     * 彻底删除小记成功
+     */
+    public static final String THING_COMPLETE_DELETE_SUCCESS = "T_003";
+
+
 }

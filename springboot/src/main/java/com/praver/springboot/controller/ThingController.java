@@ -24,6 +24,23 @@ public class ThingController {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    @GetMapping("/delete")
+    public ResponseData deleteTing(boolean complete, int thingId, boolean isRecycleBin, @RequestHeader String userToken) {
+        try {
+            User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
+            if (Validator.isEmpty(complete))
+                return new ResponseData(false, "置顶状态参数为空！", EventCode.PARAM_DELETE_COMPLETE_WRONG);
+            if (Validator.isEmpty(isRecycleBin))
+                return new ResponseData(false, "置顶状态参数为空！", EventCode.PARAM_DELETE_ReCYCLE_WRONG);
+            if (Validator.isEmpty(thingId))
+                return new ResponseData(false, "小记编号参数为空！", EventCode.PARAM_THING_ID_WRONG);
+            thingService.deleteTingById(complete, thingId, user.getId(), isRecycleBin);
+            return new ResponseData(true, complete ? "彻底删除成功！" : "删除成功！", EventCode.UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false, e.getMessage(), e.getCode());
+        }
+    }
 
     @GetMapping("/list")
     public ResponseData getUserTingList(@RequestHeader String userToken) {

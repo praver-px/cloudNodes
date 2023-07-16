@@ -83,6 +83,55 @@ public class ThingServiceImpl implements IThingService {
 
     }
 
+    @Override
+    public void deleteTingById(boolean complete, int thingId, int userId, boolean isRecycleBin) throws ServiceException {
+        int beforeStatus = 1, afterStatus = 0;
+        String desc = "删除小记", event = EventCode.THING_DELETE_SUCCESS;
+        if (complete) {
+            afterStatus = -1;
+            desc = "彻底删除小记";
+            event = EventCode.THING_COMPLETE_DELETE_SUCCESS;
+            if (isRecycleBin) beforeStatus = 0;
+
+        }
+
+        //对删除小记进行操作
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .where(THING.ID.eq(thingId))
+                .and(THING.USER_ID.eq(userId))
+                .and(THING.STATUS.eq(beforeStatus));
+
+        Thing thing = Thing.builder().status(afterStatus).updateTime(new Date()).build();
+
+        int count = 0;
+        try {
+            count = thingMapper.updateByQuery(thing, queryWrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException(desc + "失败！", EventCode.UPDATE_EXCEPTION);
+        }
+
+        if (count != 1)
+            throw new ServiceRollbackException(desc + "失败！", EventCode.UPDATE_ERROR);
+
+
+        //记录删除小记的日志事件
+        NoteThingLog noteThingLog = NoteThingLog.builder()
+                .time(new Date())
+                .event(event)
+                .desc(desc)
+                .thingId(thingId)
+                .userId(userId)
+                .build();
+
+        try {
+            count = noteThingLogMapper.insert(noteThingLog);
+        } catch (Exception e) {
+            throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_EXCEPTION);
+        }
+        if (count != 1) throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_ERROR);
+    }
+
     /**
      * 获取用户正常的小记
      *
