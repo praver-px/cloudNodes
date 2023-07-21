@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IThingService {
 
+    void newCreateThing(Thing thing) throws ServiceException;
+
     void deleteTingById(boolean complete, int thingId, int userId, boolean isRecycleBin) throws ServiceException;
 
     List<Thing> getUserNormalTing(int userId) throws ServiceException;

@@ -84,6 +84,33 @@ public class ThingServiceImpl implements IThingService {
     }
 
     @Override
+    public void newCreateThing(Thing thing) throws ServiceException {
+        int count = 0;
+        try {
+            count = thingMapper.insert(thing);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("新增小记异常", EventCode.THING_CREATE_EXCEPTION);
+        }
+        if (count != 1) throw new ServiceRollbackException("新增小记失败", EventCode.THING_CREATE_FAILED);
+
+        NoteThingLog noteThingLog = NoteThingLog.builder()
+                .time(thing.getUpdateTime())
+                .event(EventCode.THING_CREATE_SUCCESS)
+                .desc("新增小记")
+                .thingId(thing.getId())
+                .userId(thing.getUserId())
+                .build();
+
+        try {
+            count = noteThingLogMapper.insert(noteThingLog);
+        } catch (Exception e) {
+            throw new ServiceRollbackException("新增小记日志失败", EventCode.INSERT_EXCEPTION);
+        }
+        if (count != 1) throw new ServiceRollbackException("新增小记失败", EventCode.INSERT_ERROR);
+    }
+
+    @Override
     public void deleteTingById(boolean complete, int thingId, int userId, boolean isRecycleBin) throws ServiceException {
         int beforeStatus = 1, afterStatus = 0;
         String desc = "删除小记", event = EventCode.THING_DELETE_SUCCESS;

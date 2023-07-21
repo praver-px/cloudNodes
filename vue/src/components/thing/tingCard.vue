@@ -29,7 +29,7 @@ const propsData = defineProps({
 })
 
 //自定义事件
-const emits = defineEmits(['changeStatus', 'delete']);
+const emits = defineEmits(['changeStatus', 'delete', 'edit']);
 
 const thingFinishShadowColor = computed(() => {
   return "#363433"
@@ -111,7 +111,7 @@ const topThing = async (isTop) => {
 
       <n-popover>
         <template #trigger>
-          <n-button text style="margin-left: 6px">
+          <n-button text style="margin-left: 6px" @click="emits('edit')">
             <n-icon :size="18" :component="EditNoteRound"/>
           </n-button>
         </template>

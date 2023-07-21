@@ -171,6 +171,29 @@ public class EventCode {
      * 删除操作有误 - 是否为回收站操作
      */
     public static final String PARAM_DELETE_ReCYCLE_WRONG = "P_006";
+    /**
+     * 小记标题有误
+     */
+    public static String PARAM_THING_TITLE_WRONG = "P_007";
+    /**
+     * 小记置顶有误
+     */
+    public static String PARAM_THING_TOP_WRONG = "P_008";
+
+    /**
+     * 小记内容有误
+     */
+    public static String PARAM_THING_CONTENT_WRONG = "P_009";
+    /**
+     * 小记内容有误
+     */
+    public static String PARAM_THING_TAGS_WRONG = "P_010";
+    /**
+     * 小记完成有误
+     */
+    public static String PARAM_THING_FINISHED_WRONG = "P_010";
+
+
 
     //     ===== Redis 服务状态码=====
 
@@ -196,6 +219,18 @@ public class EventCode {
      * 彻底删除小记成功
      */
     public static final String THING_COMPLETE_DELETE_SUCCESS = "T_003";
+    /**
+     * 新增小记成功
+     */
+    public static final String THING_CREATE_SUCCESS = "T_004";
+    /**
+     * 新增小记异常
+     */
+    public static final String THING_CREATE_EXCEPTION = "T_005";
+    /**
+     * 新增小记失败
+     */
+    public static final String THING_CREATE_FAILED = "T_006";
 
 
 }

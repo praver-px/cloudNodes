@@ -8,6 +8,7 @@ import {useLoadingBar, useMessage} from 'naive-ui'
 import {noteBaseRequest} from "@/request/noteRequest";
 import ThingCard from '@/components/thing/tingCard.vue'
 import DeleteRemind from "@/components/remind/DeleteRemind.vue";
+import EditThingModal from "@/components/thing/EditThingModal.vue";
 import gsap from "gsap";
 
 const message = useMessage()
@@ -108,6 +109,8 @@ const toDeleteTing = async (complete) => {
   }
 
 }
+//编辑小记模态框的引用
+const editThingModalRef = ref(null)
 </script>
 
 <template>
@@ -117,7 +120,7 @@ const toDeleteTing = async (complete) => {
         <h3>小记界面</h3>
       </template>
       <template #header-extra>
-        <n-button dashed>新增小记</n-button>
+        <n-button dashed @click="editThingModalRef.showEditModal(null)">新增小记</n-button>
       </template>
     </n-card>
 
@@ -166,6 +169,7 @@ const toDeleteTing = async (complete) => {
                 :top="!!thing.top"
                 :tags="thing.tags.split(',')"
                 :time="thing.updateTime"
+                @edit="editThingModalRef.showEditModal(thing.id)"
                 @change-status="getThingList(false)"/>
           </template>
         </TransitionGroup>
@@ -178,7 +182,7 @@ const toDeleteTing = async (complete) => {
           <n-icon :component="ContentPasteOffRound"/>
         </template>
         <template #extra>
-          <n-button dashed>小记一笔</n-button>
+          <n-button dashed @click="editThingModalRef.showEditModal(null)">小记一笔</n-button>
         </template>
       </n-empty>
     </n-card>
@@ -190,9 +194,11 @@ const toDeleteTing = async (complete) => {
       @delete="toDeleteTing"
       @cancel="deleteRemind.show = false"
       :describe="deleteRemind.desc"/>
+
+  <!--  编辑-->
+  <EditThingModal ref="editThingModalRef" @save="getThingList"/>
 </template>
 <style scoped>
-
 .n-card.thing-cards {
   transition: all 0.5s;
 }

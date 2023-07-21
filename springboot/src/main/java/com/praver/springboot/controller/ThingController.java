@@ -13,6 +13,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,33 @@ public class ThingController {
     private IThingService thingService;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @PostMapping("/create")
+    public ResponseData createThing(String title, boolean top, String tags, String content, boolean finished, @RequestHeader String userToken) {
+        try {
+            User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
+            if (Validator.isEmpty(title))
+                return new ResponseData(false, "小记标题参数为空！", EventCode.PARAM_THING_TITLE_WRONG);
+            if (Validator.isEmpty(top))
+                return new ResponseData(false, "小记置顶参数为空！", EventCode.PARAM_THING_TOP_WRONG);
+            if (Validator.isEmpty(tags))
+                return new ResponseData(false, "小记标签参数为空！", EventCode.PARAM_THING_TAGS_WRONG);
+            if (Validator.isEmpty(content))
+                return new ResponseData(false, "小记内容参数为空！", EventCode.PARAM_THING_CONTENT_WRONG);
+            if (Validator.isEmpty(finished))
+                return new ResponseData(false, "小记完成参数为空！", EventCode.PARAM_THING_FINISHED_WRONG);
+            Thing thing = Thing.builder()
+                    .title(title).top(top ? 1 : 0).tags(tags)
+                    .content(content).time(new Date())
+                    .userId(user.getId()).finished(finished ? 1 : 0)
+                    .updateTime(new Date()).build();
+            thingService.newCreateThing(thing);
+            return new ResponseData(true, "小记新增成功！", EventCode.THING_CREATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false, e.getMessage(), e.getCode());
+        }
+    }
 
     @GetMapping("/delete")
     public ResponseData deleteTing(boolean complete, int thingId, boolean isRecycleBin, @RequestHeader String userToken) {

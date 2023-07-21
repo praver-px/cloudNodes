@@ -28,7 +28,6 @@ public class Thing {
     private Integer finished;
     private Date time;
     private Date updateTime;
-    @Column(onInsertValue = "0")
     private Integer top;
     @Column(onInsertValue = "1")
     private Integer status;
