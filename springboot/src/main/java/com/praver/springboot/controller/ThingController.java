@@ -25,6 +25,20 @@ public class ThingController {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    @GetMapping("/getOne")
+    public ResponseData getThing(int thingId, @RequestHeader String userToken) {
+        try {
+            User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
+            if (Validator.isEmpty(thingId))
+                return new ResponseData(false, "小记编号参数为空！", EventCode.PARAM_THING_ID_WRONG);
+            Thing thing = thingService.getThing(thingId, user.getId());
+            return new ResponseData(true, "获取小记", EventCode.SELECT_SUCCESS, thing);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false, e.getMessage(), e.getCode());
+        }
+    }
+
     @PostMapping("/create")
     public ResponseData createThing(String title, boolean top, String tags, String content, boolean finished, @RequestHeader String userToken) {
         try {

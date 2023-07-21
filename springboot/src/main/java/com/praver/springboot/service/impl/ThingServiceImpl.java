@@ -84,6 +84,24 @@ public class ThingServiceImpl implements IThingService {
     }
 
     @Override
+    public Thing getThing(int thingId, int userId) throws ServiceException {
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT)
+                .where(THING.ID.eq(thingId))
+                .and(THING.USER_ID.eq(userId))
+                .and(THING.STATUS.eq(1));
+        Thing thing = null;
+        try {
+            thing = thingMapper.selectOneByQuery(queryWrapper);
+        } catch (Exception e) {
+            throw new ServiceException("查询小记异常", EventCode.SELECT_EXCEPTION);
+        }
+        if (thing == null) throw new ServiceException("小记不存在", EventCode.SELECT_NONE);
+
+        return thing;
+    }
+
+    @Override
     public void newCreateThing(Thing thing) throws ServiceException {
         int count = 0;
         try {

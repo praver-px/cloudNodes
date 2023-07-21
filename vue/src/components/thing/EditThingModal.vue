@@ -88,7 +88,7 @@ const showEditModal = id => {
     loading.value = false
   } else {
     formValue.value.id = id
-    loading.value = false
+    getEditThing(id)
   }
 }
 const resetEditThing = () => {
@@ -128,6 +128,37 @@ const newCreateThing = async () => {
     message.success(responseData.message)
     show.value = false
     emits('save')
+  } else {
+    loadingBar.error()
+    message.error(responseData.message)
+    if (responseData.code === 'L_008') {
+      loginInvalid(true)
+    }
+  }
+}
+
+const getEditThing = async (thingId) => {
+  const userToken = await getUserToken()
+  loadingBar.start()
+  const {data: responseData} = await noteBaseRequest.get(
+      "/thing/getOne",
+      {
+        params: {thingId},
+        headers: {userToken}
+      }
+  ).catch(() => {
+    loadingBar.error()
+    throw message.error('获取小记信息失败！')
+  })
+
+  if (responseData.success) {
+    loadingBar.finish()
+    const thingData = responseData.data
+    formValue.value.title = thingData.title
+    formValue.value.top = !!thingData.top
+    formValue.value.tags = thingData.tags.split(',')
+    formValue.value.content = JSON.parse(thingData.content)
+    loading.value = false
   } else {
     loadingBar.error()
     message.error(responseData.message)
@@ -229,7 +260,7 @@ const newCreateThing = async () => {
         <template #action>
           <n-grid cols="2" :x-gap="12">
             <n-gi>
-              <n-button block tertiary @click="show.value=false">取消</n-button>
+              <n-button block tertiary @click="show = false">取消</n-button>
             </n-gi>
             <n-gi>
               <n-button block ghost type="primary" @click="saveEditThing">保存</n-button>
