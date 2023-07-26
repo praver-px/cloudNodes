@@ -23,7 +23,15 @@ const {isDarkTheme} = storeToRefs(themeStore)
 
 const loading = ref(true)
 
-const getThingList = async () => {
+//是否为新增小记
+const isNewCreate = ref(false)
+
+//编辑小记模态框的引用
+const editThingModalRef = ref(null)
+
+
+const getThingList = async (newCreate) => {
+  isNewCreate.value = newCreate
   //判断登录状态
   const userToken = await getUserToken();
   //发送获取小记列表请求
@@ -51,8 +59,8 @@ const getThingList = async () => {
     }
   }
 }
+getThingList(false)
 
-getThingList()
 // 执行动画前的位置
 const beforeEnter = (el) => {
   gsap.set(el, {
@@ -60,16 +68,18 @@ const beforeEnter = (el) => {
     opacity: 0
   })
 }
+
 // 执行动画
 const enterEvent = (el, done) => {
   gsap.to(el, {
     y: 0,//偏移量 x,y
     opacity: 1,//透明度
     duration: 0.3,//动画时间 单位 s
-    delay: el.dataset.index * 0.12,//延迟动画
+    delay: () => (isNewCreate.value ? 0 : el.dataset.index * 0.12),//延迟动画
     onComplete: done //动画完成后需要调用此函数
   })
 }
+
 
 //删除提醒框对象
 const deleteRemind = ref({
@@ -100,7 +110,7 @@ const toDeleteTing = async (complete) => {
   if (responseData.success) {
     loadingBar.finish()
     message.success(responseData.message)
-    getThingList()
+    getThingList(false)
   } else {
     message.error(responseData.message)
     if (responseData.code === "L_008") {
@@ -109,8 +119,7 @@ const toDeleteTing = async (complete) => {
   }
 
 }
-//编辑小记模态框的引用
-const editThingModalRef = ref(null)
+
 </script>
 
 <template>

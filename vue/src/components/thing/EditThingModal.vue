@@ -11,7 +11,7 @@ import {noteBaseRequest} from "@/request/noteRequest";
 const notification = useNotification()
 const loadingBar = useLoadingBar()
 const message = useMessage()
-
+const emits = defineEmits(['save'])
 const onCreateTuDoThing = () => ({
   checked: false,
   thing: '',
@@ -48,12 +48,7 @@ const formRules = {
 const saveEditThing = () => {
   formRef.value?.validate(errors => {
     if (!errors) {
-      if (formValue.value.id === null) {
-        newCreateThing()
-      } else {
-
-      }
-
+      save(formValue.value.id === null)
     } else {
       const errorsMessage = [].concat(...errors)
       notification.error({
@@ -77,7 +72,42 @@ const saveEditThing = () => {
     }
   })
 }
+//小记保存
+const save = async (isNewCreate) => {
+  const userToken = await getUserToken();
+  loadingBar.start()
+  const {data: responseData} = await noteBaseRequest(
+      {
+        method: isNewCreate ? 'PUT' : 'POST',
+        url: isNewCreate ? '/thing/create' : '/thing/update',
+        data: {
+          thingId: formValue.value.id,
+          title: formValue.value.title,
+          top: formValue.value.top,
+          tags: formValue.value.tags.join(),
+          content: JSON.stringify(formValue.value.content),
+          finished: formValue.value.finished
+        },
+        headers: {userToken}
 
+      }).catch(() => {
+    loadingBar.error()
+    throw message.error('保存失败！')
+  })
+
+  if (responseData.success) {
+    loadingBar.finish()
+    message.success(responseData.message)
+    show.value = false
+    emits('save', isNewCreate)
+  } else {
+    loadingBar.error()
+    message.error(responseData.message)
+    if (responseData.code === 'L_008') {
+      loginInvalid(true)
+    }
+  }
+}
 
 const loading = ref(true)
 const show = ref(false)
@@ -101,41 +131,6 @@ const resetEditThing = () => {
 
 defineExpose({showEditModal})
 
-const emits = defineEmits(['save'])
-
-const newCreateThing = async () => {
-  const userToken = await getUserToken()
-  loadingBar.start()
-  const {data: responseData} = await noteBaseRequest.post(
-      "/thing/create",
-      {
-        title: formValue.value.title,
-        top: formValue.value.top,
-        tags: formValue.value.tags.join(),
-        content: JSON.stringify(formValue.value.content),
-        finished: formValue.value.finished
-      },
-      {
-        headers: {userToken}
-      }
-  ).catch(() => {
-    loadingBar.error()
-    throw message.error('新增失败！')
-  })
-
-  if (responseData.success) {
-    loadingBar.finish()
-    message.success(responseData.message)
-    show.value = false
-    emits('save')
-  } else {
-    loadingBar.error()
-    message.error(responseData.message)
-    if (responseData.code === 'L_008') {
-      loginInvalid(true)
-    }
-  }
-}
 
 const getEditThing = async (thingId) => {
   const userToken = await getUserToken()

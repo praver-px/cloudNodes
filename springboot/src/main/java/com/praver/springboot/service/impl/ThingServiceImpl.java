@@ -5,8 +5,8 @@ import com.praver.springboot.entity.NoteThingLog;
 import com.praver.springboot.entity.Thing;
 import com.praver.springboot.exception.ServiceException;
 import com.praver.springboot.exception.ServiceRollbackException;
-import com.praver.springboot.mapper.INoteThingLogMapper;
 import com.praver.springboot.mapper.IThingMapper;
+import com.praver.springboot.service.INoteThingLogService;
 import com.praver.springboot.service.IThingService;
 import com.praver.springboot.util.code.EventCode;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class ThingServiceImpl implements IThingService {
     private IThingMapper thingMapper;
 
     @Resource
-    private INoteThingLogMapper noteThingLogMapper;
+    private INoteThingLogService noteThingLogService;
 
     /**
      * 修改小记的置顶状态
@@ -72,15 +72,43 @@ public class ThingServiceImpl implements IThingService {
                 .thingId(thingId)
                 .userId(userId)
                 .build();
+
+        noteThingLogService.addLog(noteThingLog,true);
+
+    }
+
+    @Override
+    public void updateThing(Thing thing) throws ServiceException {
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .where(THING.ID.eq(thing.getId()))
+                .and(THING.USER_ID.eq(thing.getUserId()))
+                .and(THING.STATUS.eq(1));
+
+        Thing uppdateThing = Thing.builder()
+                .title(thing.getTitle())
+                .tags(thing.getTags())
+                .content(thing.getContent())
+                .finished(thing.getFinished())
+                .top(thing.getTop())
+                .updateTime(thing.getUpdateTime())
+                .build();
+        int count = 0;
         try {
-            count = noteThingLogMapper.insert(noteThingLog);
+            count = thingMapper.updateByQuery(uppdateThing, queryWrapper);
         } catch (Exception e) {
-            throw new ServiceRollbackException("小记置顶状态修改失败", EventCode.INSERT_EXCEPTION);
+            throw new ServiceException("修改失败！",EventCode.UPDATE_EXCEPTION);
         }
-        if (count != 1)
-            throw new ServiceRollbackException("小记置顶状态修改失败", EventCode.INSERT_ERROR);
+        if (count != 1) throw new ServiceRollbackException("修改失败！",EventCode.UPDATE_ERROR);
 
+        NoteThingLog noteThingLog = NoteThingLog.builder()
+                .time(thing.getUpdateTime())
+                .event(EventCode.THING_UPDATE_SUCCESS)
+                .desc("修改小记")
+                .thingId(thing.getId())
+                .userId(thing.getUserId())
+                .build();
 
+        noteThingLogService.addLog(noteThingLog,true);
     }
 
     @Override
@@ -120,12 +148,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(thing.getUserId())
                 .build();
 
-        try {
-            count = noteThingLogMapper.insert(noteThingLog);
-        } catch (Exception e) {
-            throw new ServiceRollbackException("新增小记日志失败", EventCode.INSERT_EXCEPTION);
-        }
-        if (count != 1) throw new ServiceRollbackException("新增小记失败", EventCode.INSERT_ERROR);
+        noteThingLogService.addLog(noteThingLog,true);
     }
 
     @Override
@@ -169,12 +192,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(userId)
                 .build();
 
-        try {
-            count = noteThingLogMapper.insert(noteThingLog);
-        } catch (Exception e) {
-            throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_EXCEPTION);
-        }
-        if (count != 1) throw new ServiceRollbackException(desc + "失败", EventCode.INSERT_ERROR);
+        noteThingLogService.addLog(noteThingLog,true);
     }
 
     /**

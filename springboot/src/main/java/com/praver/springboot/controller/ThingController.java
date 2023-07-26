@@ -25,6 +25,36 @@ public class ThingController {
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
+    @PostMapping("/update")
+    public ResponseData updateThing(int thingId, String title, boolean top, String tags, String content, boolean finished, @RequestHeader String userToken) {
+        try {
+            User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
+            if (Validator.isEmpty(thingId))
+                return new ResponseData(false, "小记Id参数为空！", EventCode.PARAM_THING_ID_WRONG);
+            if (Validator.isEmpty(title))
+                return new ResponseData(false, "小记标题参数为空！", EventCode.PARAM_THING_TITLE_WRONG);
+            if (Validator.isEmpty(top))
+                return new ResponseData(false, "小记置顶参数为空！", EventCode.PARAM_THING_TOP_WRONG);
+            if (Validator.isEmpty(tags))
+                return new ResponseData(false, "小记标签参数为空！", EventCode.PARAM_THING_TAGS_WRONG);
+            if (Validator.isEmpty(content))
+                return new ResponseData(false, "小记内容参数为空！", EventCode.PARAM_THING_CONTENT_WRONG);
+            if (Validator.isEmpty(finished))
+                return new ResponseData(false, "小记完成参数为空！", EventCode.PARAM_THING_FINISHED_WRONG);
+            Thing thing = Thing.builder()
+                    .id(thingId)
+                    .title(title).top(top ? 1 : 0).tags(tags)
+                    .content(content).time(new Date())
+                    .userId(user.getId()).finished(finished ? 1 : 0)
+                    .updateTime(new Date()).build();
+            thingService.updateThing(thing);
+            return new ResponseData(true, "小记修改成功！", EventCode.THING_UPDATE_SUCCESS);
+        } catch (ServiceException e) {
+            e.printStackTrace();
+            return new ResponseData(false, e.getMessage(), e.getCode());
+        }
+    }
+
     @GetMapping("/getOne")
     public ResponseData getThing(int thingId, @RequestHeader String userToken) {
         try {
@@ -39,7 +69,7 @@ public class ThingController {
         }
     }
 
-    @PostMapping("/create")
+    @PutMapping("/create")
     public ResponseData createThing(String title, boolean top, String tags, String content, boolean finished, @RequestHeader String userToken) {
         try {
             User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
@@ -54,6 +84,7 @@ public class ThingController {
             if (Validator.isEmpty(finished))
                 return new ResponseData(false, "小记完成参数为空！", EventCode.PARAM_THING_FINISHED_WRONG);
             Thing thing = Thing.builder()
+                    .time(new Date())
                     .title(title).top(top ? 1 : 0).tags(tags)
                     .content(content).time(new Date())
                     .userId(user.getId()).finished(finished ? 1 : 0)

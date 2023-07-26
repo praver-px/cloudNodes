@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface IThingService {
 
+    void updateThing(Thing thing) throws ServiceException;
+
     Thing getThing(int thingId, int userId) throws ServiceException;
 
     void newCreateThing(Thing thing) throws ServiceException;

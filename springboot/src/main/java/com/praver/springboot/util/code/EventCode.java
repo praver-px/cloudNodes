@@ -194,7 +194,6 @@ public class EventCode {
     public static String PARAM_THING_FINISHED_WRONG = "P_010";
 
 
-
     //     ===== Redis 服务状态码=====
 
     /**
@@ -231,6 +230,12 @@ public class EventCode {
      * 新增小记失败
      */
     public static final String THING_CREATE_FAILED = "T_006";
+    /**
+     * 小记修改成功
+     */
+    public static final String THING_UPDATE_SUCCESS = "T_007";
 
-
+    //    ===== 日志服务状态码=====
+    public static final String LOG_CREATE_EXCEPTION = "LOG_001";
+    public static final String LOG_CREATE_ERROR = "LOG_002";
 }
