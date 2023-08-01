@@ -66,7 +66,7 @@ const clickUserMenu = (key) => {
 const signOutLogin = async () => {
   const userToken = localStorage.getItem("userToken");
   if (userToken === null) {
-    throw  message.error("登录失效")
+    throw message.error("登录失效")
   }
   //删除redis中对应的key
   const {data: responseData} = await noteBaseRequest.get(
@@ -75,7 +75,7 @@ const signOutLogin = async () => {
         headers: {userToken}
       }
   ).catch(() => {
-    throw  message.error("退出登录错误")
+    throw message.error("退出登录错误")
   })
 
   if (responseData.success) {
@@ -93,6 +93,7 @@ const signOutLogin = async () => {
   <n-space align="center" justify="space-between" style="height: 100%;">
     <n-text type="info">云笔记</n-text>
     <n-space>
+      <!--     登录后个人信息显示-->
       <n-popover trigger="hover" :warp-item="false" v-model:show="userMenuShow" :width="260" v-if="user_id !==null">
         <template #trigger>
           <n-button :bordered="false">

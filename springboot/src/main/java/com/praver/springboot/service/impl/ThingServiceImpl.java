@@ -1,5 +1,6 @@
 package com.praver.springboot.service.impl;
 
+import cn.hutool.core.lang.Validator;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.praver.springboot.entity.NoteThingLog;
 import com.praver.springboot.entity.Thing;
@@ -73,7 +74,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(userId)
                 .build();
 
-        noteThingLogService.addLog(noteThingLog,true);
+        noteThingLogService.addLog(noteThingLog, true);
 
     }
 
@@ -96,9 +97,9 @@ public class ThingServiceImpl implements IThingService {
         try {
             count = thingMapper.updateByQuery(uppdateThing, queryWrapper);
         } catch (Exception e) {
-            throw new ServiceException("修改失败！",EventCode.UPDATE_EXCEPTION);
+            throw new ServiceException("修改失败！", EventCode.UPDATE_EXCEPTION);
         }
-        if (count != 1) throw new ServiceRollbackException("修改失败！",EventCode.UPDATE_ERROR);
+        if (count != 1) throw new ServiceRollbackException("修改失败！", EventCode.UPDATE_ERROR);
 
         NoteThingLog noteThingLog = NoteThingLog.builder()
                 .time(thing.getUpdateTime())
@@ -108,7 +109,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(thing.getUserId())
                 .build();
 
-        noteThingLogService.addLog(noteThingLog,true);
+        noteThingLogService.addLog(noteThingLog, true);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(thing.getUserId())
                 .build();
 
-        noteThingLogService.addLog(noteThingLog,true);
+        noteThingLogService.addLog(noteThingLog, true);
     }
 
     @Override
@@ -192,7 +193,7 @@ public class ThingServiceImpl implements IThingService {
                 .userId(userId)
                 .build();
 
-        noteThingLogService.addLog(noteThingLog,true);
+        noteThingLogService.addLog(noteThingLog, true);
     }
 
     /**
@@ -203,12 +204,18 @@ public class ThingServiceImpl implements IThingService {
      * @throws ServiceException
      */
     @Override
-    public List<Thing> getUserNormalTing(int userId) throws ServiceException {
+    public List<Thing> getUserNormalTing(String search, Integer filter, int userId) throws ServiceException {
         QueryWrapper queryWrapper = QueryWrapper.create()
                 .select(THING.ID, THING.TITLE, THING.TOP, THING.TAGS, THING.UPDATE_TIME, THING.FINISHED)
                 .where(THING.USER_ID.eq(userId))
-                .and(THING.STATUS.eq(1))
-                .orderBy(THING.FINISHED.asc(), THING.TOP.desc(), THING.UPDATE_TIME.desc());
+                .and(THING.STATUS.eq(1));
+        if (Validator.isNotEmpty(search)) {
+            queryWrapper.and(THING.TITLE.like(search).or(THING.TAGS.like(search)));
+        }
+        if (filter != null && (filter == 0 || filter == 1)) {
+            queryWrapper.having(THING.FINISHED.eq(filter));
+        }
+        queryWrapper.orderBy(THING.FINISHED.asc(), THING.TOP.desc(), THING.UPDATE_TIME.desc());
         try {
             return thingMapper.selectListByQuery(queryWrapper);
         } catch (Exception e) {

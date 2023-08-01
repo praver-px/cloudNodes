@@ -1,5 +1,5 @@
 <script setup>
-import {ContentPasteOffRound} from '@vicons/material'
+import {ContentPasteOffRound, SearchRound} from '@vicons/material'
 import {ref} from 'vue'
 import {useThemeStore} from "@/stores/themeStore";
 import {storeToRefs} from "pinia";
@@ -23,15 +23,26 @@ const {isDarkTheme} = storeToRefs(themeStore)
 
 const loading = ref(true)
 
-//是否为新增小记
-const isNewCreate = ref(false)
 
 //编辑小记模态框的引用
 const editThingModalRef = ref(null)
 
+const search = ref(null)
 
-const getThingList = async (newCreate) => {
-  isNewCreate.value = newCreate
+const filter = ref(null)
+
+let enterDelay = true
+let hiddenAnimation = true
+
+const filterOptions = [
+  {label: '默认', value: null},
+  {label: '已完成', value: 1},
+  {label: '未完成', value: 0},
+]
+
+const getThingList = async (ed, ha) => {
+  enterDelay = ed
+  hiddenAnimation = ha
   //判断登录状态
   const userToken = await getUserToken();
   //发送获取小记列表请求
@@ -40,6 +51,10 @@ const getThingList = async (newCreate) => {
   const {data: responseData} = await noteBaseRequest.get(
       "/thing/list",
       {
+        params: {
+          search: search.value,
+          filter: filter.value
+        },
         headers: {userToken}
       }
   ).catch(() => {
@@ -59,14 +74,22 @@ const getThingList = async (newCreate) => {
     }
   }
 }
-getThingList(false)
+getThingList(true, false)
 
 // 执行动画前的位置
 const beforeEnter = (el) => {
-  gsap.set(el, {
-    y: 50,
-    opacity: 0
-  })
+  if (hiddenAnimation) {
+    const left = el.offsetLeft
+    const top = el.offsetTop
+    gsap.set(el, {
+      position: 'absolute',
+      boxShadow: '0 0 5px black',
+      zIndex: 1,
+      top,
+      left
+    })
+  }
+
 }
 
 // 执行动画
@@ -75,9 +98,29 @@ const enterEvent = (el, done) => {
     y: 0,//偏移量 x,y
     opacity: 1,//透明度
     duration: 0.3,//动画时间 单位 s
-    delay: () => (isNewCreate.value ? 0 : el.dataset.index * 0.12),//延迟动画
+    delay: () => (enterDelay ? el.dataset.index * 0.12 : 0),//延迟动画
     onComplete: done //动画完成后需要调用此函数
   })
+}
+
+const leaveEvent = (el, done) => {
+  if (hiddenAnimation) {
+    let tl = gsap.timeline() //创建动画时间线
+    tl.to(el, {
+      scale: 1.3,
+      duration: 0.25,
+    }).to(el, {
+      scale: 0,
+      duration: 0.25,
+      onComplete: done
+    })
+  } else {
+    gsap.to(el, {
+      duration: 0,//动画时间 s
+      onComplete: done
+    })
+  }
+
 }
 
 
@@ -110,16 +153,14 @@ const toDeleteTing = async (complete) => {
   if (responseData.success) {
     loadingBar.finish()
     message.success(responseData.message)
-    getThingList(false)
+    getThingList(false, true)
   } else {
     message.error(responseData.message)
     if (responseData.code === "L_008") {
       loginInvalid(true)
     }
   }
-
 }
-
 </script>
 
 <template>
@@ -129,7 +170,18 @@ const toDeleteTing = async (complete) => {
         <h3>小记界面</h3>
       </template>
       <template #header-extra>
-        <n-button dashed @click="editThingModalRef.showEditModal(null)">新增小记</n-button>
+        <n-space>
+          <!--          搜索-->
+          <n-input-group>
+            <n-input v-model:value="search" placeholder="搜索"/>
+            <n-button @click="getThingList(false)">
+              <n-icon size="20" :component="SearchRound"/>
+            </n-button>
+          </n-input-group>
+          <n-select @update:value="getThingList(false)" :options="filterOptions" v-model:value="filter"
+                    placeholder="筛选" style="width: 120px;"/>
+          <n-button dashed @click="editThingModalRef.showEditModal(null)">新增小记</n-button>
+        </n-space>
       </template>
     </n-card>
 
@@ -179,7 +231,7 @@ const toDeleteTing = async (complete) => {
                 :tags="thing.tags.split(',')"
                 :time="thing.updateTime"
                 @edit="editThingModalRef.showEditModal(thing.id)"
-                @change-status="getThingList(false)"/>
+                @change-status="getThingList(false,false)"/>
           </template>
         </TransitionGroup>
 

@@ -116,11 +116,10 @@ public class ThingController {
     }
 
     @GetMapping("/list")
-    public ResponseData getUserTingList(@RequestHeader String userToken) {
-
+    public ResponseData getUserTingList(String search, Integer filter, @RequestHeader String userToken) {
         try {
             User user = TokenValidateUtil.validateUserToken(userToken, stringRedisTemplate);
-            List<Thing> things = thingService.getUserNormalTing(user.getId());
+            List<Thing> things = thingService.getUserNormalTing(search, filter, user.getId());
             return new ResponseData(true, "获取成功！", EventCode.SELECT_SUCCESS, things);
         } catch (ServiceException e) {
             e.printStackTrace();

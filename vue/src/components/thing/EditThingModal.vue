@@ -99,7 +99,7 @@ const save = async (isNewCreate) => {
     loadingBar.finish()
     message.success(responseData.message)
     show.value = false
-    emits('save', isNewCreate)
+    emits('save', false, false)
   } else {
     loadingBar.error()
     message.error(responseData.message)
