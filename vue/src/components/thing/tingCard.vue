@@ -2,7 +2,7 @@
 import {
   ArrowCircleDownRound,
   ArrowCircleUpRound,
-  ArrowUpwardRound,
+  NavigationRound,
   DeleteOutlineRound,
   EditNoteRound
 } from "@vicons/material";
@@ -133,7 +133,7 @@ const topThing = async (isTop) => {
             round
             size="small"
             :bordered="false">
-          <n-icon size="18" :component="ArrowUpwardRound"/>
+          <n-icon size="18" :component="NavigationRound"/>
         </n-tag>
         <n-divider v-if="top" vertical/>
         <n-text depth="3">{{ time }}</n-text>

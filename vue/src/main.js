@@ -15,10 +15,12 @@ import naive from "naive-ui";
 
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+import eventBus from 'vue3-eventbus'
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
-app.use(router).use(naive).use(pinia)
+app.use(router).use(naive).use(pinia).use(eventBus)
 
 app.mount('#app')

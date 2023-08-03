@@ -1,17 +1,28 @@
 <script setup>
-import {computed, ref, h} from "vue";
+import {computed, ref, h, onBeforeUnmount} from "vue";
 
 import {AddRound, MinusRound} from '@vicons/material'
 
 import {NSpace, NText, useNotification, useLoadingBar, useMessage} from 'naive-ui'
 import {getUserToken, loginInvalid} from "@/utils/userLoginUtil";
 import {noteBaseRequest} from "@/request/noteRequest";
+import bus from 'vue3-eventbus'
 
 
 const notification = useNotification()
 const loadingBar = useLoadingBar()
 const message = useMessage()
 const emits = defineEmits(['save'])
+
+//是否触发了新增小记事件 --显示新增小记窗口
+bus.on('newCreateThing', () => {
+  showEditModal(null)
+})
+//组件卸载之前
+onBeforeUnmount(() => {
+  bus.off('newCreateThing')//停止监听此事件
+})
+
 const onCreateTuDoThing = () => ({
   checked: false,
   thing: '',
@@ -165,7 +176,13 @@ const getEditThing = async (thingId) => {
 
 </script>
 <template>
-  <n-modal v-model:show="show" :auto-focus="false" :on-after-leave="resetEditThing">
+  <n-modal
+      :close-on-esc="false"
+      :mask-closable="false"
+      v-model:show="show"
+      :auto-focus="false"
+      :on-after-leave="resetEditThing"
+      transform-origin="center">
     <div>
       <!--      骨架屏-->
       <n-card size="small" :bordered="false" style="width: 460px" v-show="loading">
