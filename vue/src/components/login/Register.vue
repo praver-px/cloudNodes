@@ -3,6 +3,7 @@ import {ref} from "vue";
 import {EmailOutlined} from "@vicons/material";
 import {useLoadingBar, useMessage} from "naive-ui";
 import {noteBaseRequest} from "@/request/noteRequest";
+import {disableBtn} from "@/utils/disableBtn";
 
 const loadingBar = useLoadingBar();
 const message = useMessage();
@@ -38,8 +39,7 @@ const register = (e) => {
       }
 
       loadingBar.start()
-      registerBtnDisable.value = true
-
+      disableBtn(registerBtnDisable, true)
       const {data: responseData} = await noteBaseRequest.post(
           "/user/register/email",
           {
@@ -50,9 +50,8 @@ const register = (e) => {
       ).catch(() => {
         loadingBar.error()
         message.error("注册请求失败！")
-        setTimeout(() => {
-          registerBtnDisable.value = false
-        }, 2500)
+        disableBtn(registerBtnDisable, false, true, 1.5)
+
         throw "发送注册请求失败！"
       })
 
@@ -62,9 +61,7 @@ const register = (e) => {
       } else {
         loadingBar.error()
         message.error(responseData.message)
-        setTimeout(() => {
-          registerBtnDisable.value = false
-        }, 2500)
+        disableBtn(registerBtnDisable, false, true, 1.5)
       }
 
     }

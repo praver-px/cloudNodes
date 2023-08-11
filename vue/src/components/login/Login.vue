@@ -5,6 +5,7 @@ import {noteBaseRequest} from "@/request/noteRequest";
 import {useMessage, useLoadingBar} from 'naive-ui'
 import {useLoginModalStore} from "@/stores/loginModalStore";
 import {useUserStore} from "@/stores/userStore";
+import {disableBtn} from "@/utils/disableBtn";
 
 //用户共享的资源对象
 const userStore = useUserStore();
@@ -36,7 +37,7 @@ const login = (e) => {
   loginFormRef.value?.validate(async (errors) => {
     if (!errors) {
       loadingBar.start() // 加载条开始
-      loginBtnDisable.value = true
+      disableBtn(loginBtnDisable, true)
       //发送登录请求
       const {data: responseData} = await noteBaseRequest.post("/user/login/email/password", {
         email: loginFormValue.value.email,
@@ -45,13 +46,13 @@ const login = (e) => {
         loadingBar.error();
         //发送请求失败
         message.error("发送请求失败");
-        setTimeout(() => {
-          loginBtnDisable.value = false
-        }, 1500)
+        disableBtn(loginBtnDisable, false, true, 1.5)
         throw "发送请求失败！";
       })
       //等到服务器数据除了
       //console.log(responseData)
+      disableBtn(loginBtnDisable, false, true, 1.5)
+
       if (responseData.success) {
         loadingBar.finish();
         message.success(responseData.message);

@@ -11,6 +11,7 @@ import {computed, ref} from "vue";
 import {getUserToken, loginInvalid} from "@/utils/userLoginUtil";
 import {noteBaseRequest} from "@/request/noteRequest";
 import {useLoadingBar, useMessage} from 'naive-ui'
+import {disableBtn} from "@/utils/disableBtn";
 
 const message = useMessage()
 const loadingBar = useLoadingBar()
@@ -53,6 +54,8 @@ const topThing = async (isTop) => {
   const userToken = await getUserToken();
   loadingBar.start()
   topBtnDisabled.value = true
+  disableBtn(topBtnDisabled, true)
+
   const {data: responseData} = await noteBaseRequest.get(
       "/thing/top",
       {
@@ -61,10 +64,12 @@ const topThing = async (isTop) => {
       }
   ).catch(() => {
     loadingBar.error()
-    topBtnDisabled.value = false
+    disableBtn(topBtnDisabled, false, true, 1.5)
+
     throw message.error(isTop ? "置顶失败！" : "取消置顶失败！")
   })
-  topBtnDisabled.value = false
+  disableBtn(topBtnDisabled, false, true, 1.5)
+
   if (responseData.success) {
     loadingBar.finish()
     message.success(responseData.message)

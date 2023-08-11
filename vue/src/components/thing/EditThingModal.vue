@@ -7,6 +7,7 @@ import {NSpace, NText, useNotification, useLoadingBar, useMessage} from 'naive-u
 import {getUserToken, loginInvalid} from "@/utils/userLoginUtil";
 import {noteBaseRequest} from "@/request/noteRequest";
 import bus from 'vue3-eventbus'
+import {disableBtn} from '@/utils/disableBtn'
 
 
 const notification = useNotification()
@@ -56,6 +57,7 @@ const formRules = {
     message: '请设置内容！'
   }
 }
+
 const saveEditThing = () => {
   formRef.value?.validate(errors => {
     if (!errors) {
@@ -83,10 +85,14 @@ const saveEditThing = () => {
     }
   })
 }
+const saveBtnDisabled = ref(false)
+
+
 //小记保存
 const save = async (isNewCreate) => {
   const userToken = await getUserToken();
   loadingBar.start()
+  disableBtn(saveBtnDisabled, true)
   const {data: responseData} = await noteBaseRequest(
       {
         method: isNewCreate ? 'PUT' : 'POST',
@@ -103,8 +109,10 @@ const save = async (isNewCreate) => {
 
       }).catch(() => {
     loadingBar.error()
+    disableBtn(saveBtnDisabled, false, true, 1.5)
     throw message.error('保存失败！')
   })
+  disableBtn(saveBtnDisabled, false, true, 1.5)
 
   if (responseData.success) {
     loadingBar.finish()
@@ -275,7 +283,7 @@ const getEditThing = async (thingId) => {
               <n-button block tertiary @click="show = false">取消</n-button>
             </n-gi>
             <n-gi>
-              <n-button block ghost type="primary" @click="saveEditThing">保存</n-button>
+              <n-button :disabled="saveBtnDisabled" block ghost type="primary" @click="saveEditThing">保存</n-button>
             </n-gi>
           </n-grid>
         </template>
