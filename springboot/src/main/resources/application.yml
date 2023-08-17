@@ -32,8 +32,8 @@ spring:
       max-file-size: 1MB # 设置单个文件最大长度
 server:
   port: 8080
-  servlet:
-    context-path: /cloudNotes
+#  servlet:
+#    context-path: /cloudNotes
 logging:
   level:
     com.praver.springboot: debug

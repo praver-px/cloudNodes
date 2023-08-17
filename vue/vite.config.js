@@ -41,12 +41,13 @@ export default defineConfig({
     },
     // 服务
     server: {
+        port: 8090,
         // 代理
         proxy: {
-            '/note': {
-                target: 'http://localhost:8080/cloudNotes/', // 代理后台服务器地址
+            '/note-serve': {
+                target: 'http://localhost:8080/', // 代理后台服务器地址
                 changeOrigin: true, //允许跨域
-                rewrite: path => path.replace(/^\/note/, '') // 将请求地址中的 /note 替换成空
+                rewrite: path => path.replace(/^\/note-serve/, '') // 将请求地址中的 /note 替换成空
             }
         }
     }

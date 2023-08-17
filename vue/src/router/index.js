@@ -7,6 +7,11 @@ const routes = [
         name: 'Thing',
         component: () => import('../views/thing/indexView.vue')
     },
+    {
+        path: '/note',
+        name: 'note',
+        component: () => import('../views/note/indexView.vue')
+    },
 
 ]
 

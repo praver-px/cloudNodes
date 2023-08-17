@@ -44,7 +44,7 @@ const addBoxOption = [
 
 const mainMenus = [
   {label: '最近操作', icon: AccessTimeRound, size: 30, to: ''},
-  {label: '笔记', icon: ArticleOutlined, size: 30, to: ''},
+  {label: '笔记', icon: ArticleOutlined, size: 30, to: '/note'},
   {label: '小记', icon: ListOutlined, size: 30, to: '/thing'},
   {label: '收藏', icon: StarBorderRound, size: 32, to: ''},
   {label: '商城', icon: ShoppingCartOutlined, size: 30, to: ''},

@@ -127,7 +127,6 @@ const topThing = async (isTop) => {
     <template #default>
       <n-space>
         <n-tag v-for="tag in tags" size="small" :bordered="false">{{ tag }}</n-tag>
-
       </n-space>
     </template>
     <template #footer>
