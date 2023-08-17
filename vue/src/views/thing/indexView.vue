@@ -1,21 +1,37 @@
 <script setup>
 import {ContentPasteOffRound, SearchRound} from '@vicons/material'
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {useThemeStore} from "@/stores/themeStore";
 import {storeToRefs} from "pinia";
 import {getUserToken, loginInvalid} from '@/utils/userLoginUtil'
 import {useLoadingBar, useMessage} from 'naive-ui'
 import {noteBaseRequest} from "@/request/noteRequest";
 import ThingCard from '@/components/thing/tingCard.vue'
-import DeleteRemind from "@/components/remind/DeleteRemind.vue";
 import EditThingModal from "@/components/thing/EditThingModal.vue";
 import gsap from "gsap";
+import {useUserStore} from "@/stores/userStore"
 
 const message = useMessage()
 const loadingBar = useLoadingBar()
 
 const things = ref([])
 
+const userStore = useUserStore()
+const {token, id: user_id} = userStore
+
+watch(
+    () => token.value,
+    newData => {
+      if (newData !== null) {
+        loading.value = true
+        getThingList(true, false)
+        const editThingValue = editThingModalRef.value;
+        if (editThingValue.thingId !== null && editThingValue.userId !== user_id) {
+          editThingValue.show = false
+        }
+      }
+    }
+)
 
 const themeStore = useThemeStore()
 const {isDarkTheme} = storeToRefs(themeStore)

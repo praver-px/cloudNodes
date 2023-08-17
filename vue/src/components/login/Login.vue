@@ -57,9 +57,9 @@ const login = (e) => {
         loadingBar.finish();
         message.success(responseData.message);
         changeLoginModalShowStatus(false)
-        localStorage.setItem("userToken", responseData.data.userToken)
+        // localStorage.setItem("userToken", responseData.data.userToken)
         const user = responseData.data.user;
-        setUserInfo(user.id, user.nickname, user.headPic, user.level, user.email, user.time)
+        setUserInfo(responseData.data.userToken, user.id, user.nickname, user.headPic, user.level, user.email, user.time)
       } else {
         loadingBar.error();
         message.error(responseData.message);

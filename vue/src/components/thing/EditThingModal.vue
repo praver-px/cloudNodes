@@ -29,6 +29,9 @@ const onCreateTuDoThing = () => ({
   thing: '',
 })
 
+const userId = ref(null)
+const thingId = computed(() => formValue.value.id)
+
 const formValue = ref({
   id: null,
   title: '',
@@ -148,9 +151,6 @@ const resetEditThing = () => {
   formValue.value.content = []
 }
 
-defineExpose({showEditModal})
-
-
 const getEditThing = async (thingId) => {
   const userToken = await getUserToken()
   loadingBar.start()
@@ -162,12 +162,14 @@ const getEditThing = async (thingId) => {
       }
   ).catch(() => {
     loadingBar.error()
+    show.value = false
     throw message.error('获取小记信息失败！')
   })
 
   if (responseData.success) {
     loadingBar.finish()
     const thingData = responseData.data
+    userId.value = thingData.userId
     formValue.value.title = thingData.title
     formValue.value.top = !!thingData.top
     formValue.value.tags = thingData.tags.split(',')
@@ -175,12 +177,16 @@ const getEditThing = async (thingId) => {
     loading.value = false
   } else {
     loadingBar.error()
+    show.value = false
     message.error(responseData.message)
     if (responseData.code === 'L_008') {
       loginInvalid(true)
     }
   }
 }
+
+
+defineExpose({showEditModal, show, userId, thingId})
 
 </script>
 <template>

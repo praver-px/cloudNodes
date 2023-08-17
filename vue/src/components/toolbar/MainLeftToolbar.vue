@@ -77,7 +77,7 @@ watch(() => router.currentRoute.value, newData => {
   <n-space vertical :size="10">
     <n-popover v-for="menu in mainMenus" trigger="hover" placement="right" :show-arrow="false">
       <template #trigger>
-        <n-button text @click="router.push(menu.to)">
+        <n-button text @click="router.push(menu.to)" :quaternary="routerPath !== menu.to">
           <n-icon :size="menu.size" :color="routerPath===menu.to?'#63e2b7':null" :component="menu.icon"/>
         </n-button>
       </template>

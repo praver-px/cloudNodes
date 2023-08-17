@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia'
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 
 
 //操作主题的全局状态
@@ -7,6 +7,7 @@ import {computed, ref} from "vue";
 export const useUserStore = defineStore(
     "user",
     () => {
+        const token = ref(null)
         const id = ref(null)
         const nickname = ref(null)
         const headPic = ref(null)
@@ -14,7 +15,8 @@ export const useUserStore = defineStore(
         const email = ref(null)
         const time = ref(null)
 
-        const setUserInfo = (u_id, u_nickname, u_headPic, u_level, u_email, u_time) => {
+        const setUserInfo = (u_token, u_id, u_nickname, u_headPic, u_level, u_email, u_time) => {
+            token.value = u_token
             id.value = u_id
             nickname.value = u_nickname
             headPic.value = u_headPic
@@ -24,15 +26,15 @@ export const useUserStore = defineStore(
 
         }
         const head_image = computed(() => {
-            if (headPic.value === null) {
+            if (headPic.value === null || headPic.value === undefined) {
                 return 'https://cdnimg103.lizhi.fm/user/2017/02/04/2583325032200238082_160x160.jpg'
             } else {
                 return headPic.value
             }
         })
         const nickName = computed(() => {
-            if (nickname.value === null) {
-                return email.value
+            if (nickname.value === null || nickname.value === undefined) {
+                return '暂未设置昵称'
             } else {
                 return nickname.value
             }
@@ -45,15 +47,24 @@ export const useUserStore = defineStore(
             }
         })
         const resetUserInfo = () => {
-            id.value = null
-            nickname.value = null
-            headPic.value = null
-            level.value = null
-            email.value = null
-            time.value = null
+            token.value = null
         }
 
-        return {id, email, nickname, level, time, head_image, nickName, levelInfo, resetUserInfo, setUserInfo}
+        watch(
+            () => token.value,
+            newData => {
+                if (newData === null) {
+                    id.value = null
+                    nickname.value = null
+                    headPic.value = null
+                    level.value = null
+                    email.value = null
+                    time.value = null
+                }
+            }
+        )
+
+        return {token, id, email, nickname, level, time, head_image, nickName, levelInfo, resetUserInfo, setUserInfo}
     },
     {
         persist: {

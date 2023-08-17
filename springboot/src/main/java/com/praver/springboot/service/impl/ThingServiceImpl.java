@@ -115,7 +115,7 @@ public class ThingServiceImpl implements IThingService {
     @Override
     public Thing getThing(int thingId, int userId) throws ServiceException {
         QueryWrapper queryWrapper = QueryWrapper.create()
-                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT)
+                .select(THING.TITLE, THING.TOP, THING.TAGS, THING.CONTENT, THING.USER_ID)
                 .where(THING.ID.eq(thingId))
                 .and(THING.USER_ID.eq(userId))
                 .and(THING.STATUS.eq(1));

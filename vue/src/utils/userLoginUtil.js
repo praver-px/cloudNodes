@@ -6,7 +6,8 @@ import {useUserStore} from "@/stores/userStore";
  * @returns {Promise<void>}
  */
 export const getUserToken = async () => {
-    const token = localStorage.getItem("userToken");
+    const {token} = useUserStore()
+    // const token = localStorage.getItem("userToken");
     if (token === null) {
         // 弹出登录窗口
         const {changeLoginModalShowStatus} = useLoginModalStore()
@@ -22,9 +23,9 @@ export const getUserToken = async () => {
  */
 
 export const loginInvalid = show => {
-
-    localStorage.removeItem("userToken")
+    // localStorage.removeItem("userToken")
     const {resetUserInfo} = useUserStore()
+    resetUserInfo()
     if (show) {
         const {changeLoginModalShowStatus} = useLoginModalStore()
         changeLoginModalShowStatus(true)
