@@ -122,7 +122,6 @@ public class EventCode {
      */
     public static final String EMAIL_SEND_VC_SAVE_REDIS_ERROR = "E_003";
 
-
     /**
      * 发送初始密码异常
      */
@@ -163,6 +162,8 @@ public class EventCode {
      * 小记编号参数有误
      */
     public static final String PARAM_THING_ID_WRONG = "P_006";
+    public static final String PARAM_ID_WRONG = "P_006";
+
     /**
      * 删除参数有误 - 是否为彻底删除参数
      */
@@ -171,6 +172,7 @@ public class EventCode {
      * 删除操作有误 - 是否为回收站操作
      */
     public static final String PARAM_DELETE_ReCYCLE_WRONG = "P_006";
+
     /**
      * 小记标题有误
      */
@@ -238,4 +240,15 @@ public class EventCode {
     //    ===== 日志服务状态码=====
     public static final String LOG_CREATE_EXCEPTION = "LOG_001";
     public static final String LOG_CREATE_ERROR = "LOG_002";
+    //    ===== 笔记服务状态码=====
+    public static final String NOTE_TOP_FAILED = "N_001";
+
+    public static final String NOTE_TOP_SUCCESS = "N_002";
+
+    public static final String NOTE_DELETE_SUCCESS = "N_003";
+    public static final String NOTE_COMPLETE_DELETE_SUCCESS = "N_004";
+
+
+
+
 }

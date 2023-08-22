@@ -19,7 +19,6 @@ public class INoteThingLogServiceImpl implements INoteThingLogService {
 
     @Override
     public void addLog(NoteThingLog log, boolean isRollback) throws ServiceException {
-
         int count;
         String message = log.getDesc() + "失败！";
         try {
@@ -42,4 +41,5 @@ public class INoteThingLogServiceImpl implements INoteThingLogService {
             }
         }
     }
+
 }

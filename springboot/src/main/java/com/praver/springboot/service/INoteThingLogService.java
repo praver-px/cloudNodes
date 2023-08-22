@@ -6,5 +6,6 @@ import com.praver.springboot.exception.ServiceException;
 //日志业务
 public interface INoteThingLogService {
 
-    void  addLog(NoteThingLog log,boolean isRollback) throws ServiceException;
+    void addLog(NoteThingLog log, boolean isRollback) throws ServiceException;
+
 }

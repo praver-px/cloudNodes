@@ -1,9 +1,11 @@
 <script setup>
 import {DeleteOutlineFilled} from '@vicons/material'
+import {computed} from "vue";
 
-defineProps({
+const propsData = defineProps({
   show: {type: Boolean, default: false},
-  describe: {type: String, required: true},
+  title: {type: String},
+  size: {type: Number, default: 1},
   deleteBtn: {type: Boolean, default: true},
   completeDeleteBtn: {type: Boolean, default: true},
 })
@@ -11,6 +13,19 @@ defineProps({
 //自定义事件 彻底删除 删除 取消
 const emit = defineEmits(['delete', 'cancel']);
 
+const describe = computed(() => {
+  if (propsData.size === 1) {
+    if (propsData.deleteBtn && propsData.completeDeleteBtn) {
+      return '删除⌈' + propsData.title + '⌋可在回收站中恢复，彻底删除将无法恢复！'
+    }
+    if (!propsData.deleteBtn && propsData.completeDeleteBtn) {
+      return '彻底删除⌈' + propsData.title + '⌋将无法恢复！'
+    }
+    return '删除提醒'
+  } else {
+    return '你确定要删除这' + propsData.size + '个文件嘛？'
+  }
+})
 </script>
 
 <template>

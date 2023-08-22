@@ -94,17 +94,10 @@ getThingList(true, false)
 
 // 执行动画前的位置
 const beforeEnter = (el) => {
-  if (hiddenAnimation) {
-    const left = el.offsetLeft
-    const top = el.offsetTop
-    gsap.set(el, {
-      position: 'absolute',
-      boxShadow: '0 0 5px black',
-      zIndex: 1,
-      top,
-      left
-    })
-  }
+  gsap.set(el, {
+    y: 30,
+    opacity: 0
+  })
 
 }
 
@@ -119,6 +112,19 @@ const enterEvent = (el, done) => {
   })
 }
 
+const beforeLeave = (el) => {
+  if (hiddenAnimation) {
+    const left = el.offsetLeft
+    const top = el.offsetTop
+    gsap.set(el, {
+      position: 'absolute',
+      boxShadow: '0 0 5px black',
+      zIndex: 1,
+      top,
+      left
+    })
+  }
+}
 const leaveEvent = (el, done) => {
   if (hiddenAnimation) {
     let tl = gsap.timeline() //创建动画时间线
@@ -144,12 +150,12 @@ const leaveEvent = (el, done) => {
 const deleteRemind = ref({
   show: false,//显示情况
   id: null,//小记id
-  desc: null,//提醒框内容
+  title: null,//提醒框内容
 })
 const showDeleteRemindDialog = (id, title) => {
   deleteRemind.value.id = id
   deleteRemind.value.show = true
-  deleteRemind.value.desc = "您确定要删除《" + title + "》?  \n 删除后可在回收站中恢复，彻底删除将无法恢复！";
+  deleteRemind.value.title = title
 }
 
 const toDeleteTing = async (complete) => {
@@ -232,7 +238,8 @@ const toDeleteTing = async (complete) => {
       </n-space>
       <!--      具体小记信息-->
       <n-space :wrap-item="false">
-        <TransitionGroup @before-enter="beforeEnter" @enter="enterEvent">
+        <TransitionGroup @before-enter="beforeEnter" @enter="enterEvent" @before-leave="beforeLeave"
+                         @leave="leaveEvent" move-class="move-transition">
           <template v-if="!loading && things.length >0">
             <thing-card
                 class="thing-cards"
@@ -270,13 +277,13 @@ const toDeleteTing = async (complete) => {
       :show="deleteRemind.show"
       @delete="toDeleteTing"
       @cancel="deleteRemind.show = false"
-      :describe="deleteRemind.desc"/>
+      :title="deleteRemind.title"/>
 
   <!--  编辑-->
   <EditThingModal ref="editThingModalRef" @save="getThingList"/>
 </template>
 <style scoped>
-.n-card.thing-cards {
+.move-transition {
   transition: all 0.5s;
 }
 </style>
